@@ -1,3 +1,4 @@
+import { formatInt } from '../format.ts';
 import type { WrappedStats } from './compute.ts';
 
 export interface Personality {
@@ -104,7 +105,8 @@ export const ARCHETYPES: Archetype[] = [
     colors: ['#172554', '#2563eb', '#a78bfa'],
     score: (s) =>
       share(s.tools.find((t) => t.name === 'Agent')?.count ?? 0, Math.max(s.sessions, 1)) / 1.2,
-    reason: (s) => `You sent out ${s.tools.find((t) => t.name === 'Agent')?.count ?? 0} subagents.`,
+    reason: (s) =>
+      `You sent out ${formatInt(s.tools.find((t) => t.name === 'Agent')?.count ?? 0)} subagents.`,
   },
   {
     id: 'marathoner',
@@ -139,7 +141,7 @@ export const ARCHETYPES: Archetype[] = [
     colors: ['#4c1d95', '#8b5cf6', '#f0abfc'],
     score: (s) => share(s.phrases.agent.absolutelyRight ?? 0, Math.max(s.sessions, 1)) / 1.5,
     reason: (s) =>
-      `Your agent told you "you're absolutely right" ${s.phrases.agent.absolutelyRight ?? 0} times.`,
+      `Your agent told you "you're absolutely right" ${formatInt(s.phrases.agent.absolutelyRight ?? 0)} times.`,
   },
   {
     id: 'juggler',
@@ -159,7 +161,7 @@ export const ARCHETYPES: Archetype[] = [
         ? share((s.phrases.user.please ?? 0) + (s.phrases.user.thanks ?? 0), s.prompts) / 0.3
         : 0,
     reason: (s) =>
-      `You said "please" ${s.phrases.user.please ?? 0} times and "thanks" ${s.phrases.user.thanks ?? 0} times.`,
+      `You said "please" ${formatInt(s.phrases.user.please ?? 0)} times and "thanks" ${formatInt(s.phrases.user.thanks ?? 0)} times.`,
   },
 ];
 
@@ -168,7 +170,8 @@ const PRAGMATIST: Omit<Archetype, 'score'> = {
   title: 'The Pragmatist',
   tagline: 'No drama, no 4 AM heroics. Just shipping.',
   colors: ['#0f172a', '#4f46e5', '#06b6d4'],
-  reason: (s) => `${s.sessions} sessions across ${s.activeDays} days, steady as a metronome.`,
+  reason: (s) =>
+    `${formatInt(s.sessions)} sessions across ${formatInt(s.activeDays)} days, steady as a metronome.`,
 };
 
 const NEWCOMER: Omit<Archetype, 'score'> = {

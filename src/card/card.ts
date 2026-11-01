@@ -148,10 +148,6 @@ function share(part: number | undefined, whole: number): string {
   return `${Math.round((part / whole) * 100)}% of replies`;
 }
 
-function truncate(text: string, max: number): string {
-  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
-}
-
 interface TileSize {
   width: number;
   height: number;
@@ -161,16 +157,36 @@ interface TileSize {
   scale: number;
 }
 
-/** Approximate advance width of Bricolage ExtraBold, as a share of the font size. */
-const VALUE_CHAR_WIDTH = 0.6;
+/** Approximate advance widths of Bricolage ExtraBold, as a share of the font size. */
+function textWidth(text: string, fontSize: number): number {
+  let em = 0;
+  for (const ch of text) {
+    if (/[A-Z0-9$%@#&]/.test(ch) || /[mw]/.test(ch)) em += 0.64;
+    else if (/[a-z]/.test(ch)) em += 0.53;
+    else if (/[.,:;'!|il]/.test(ch)) em += 0.3;
+    else em += 0.45;
+  }
+  return em * fontSize;
+}
+
+/** Longest prefix (with an ellipsis) that fits `width` at `fontSize`. */
+function fit(text: string, width: number, fontSize: number): string {
+  if (textWidth(text, fontSize) <= width) return text;
+  let cut = text.length - 1;
+  while (cut > 1 && textWidth(`${text.slice(0, cut)}…`, fontSize) > width) cut--;
+  return `${text.slice(0, cut)}…`;
+}
 
 function tileNode(tile: Tile, size: TileSize): Node {
   const k = size.scale;
   const inner = size.width - 40 * k - (tile.unit ? tile.unit.length * 10 * k + 10 : 0);
   // Shrink long values to fit, but never below ~60% of the full size: shorten them instead.
   const minSize = size.value * 0.6;
-  const value = truncate(tile.value, Math.floor(inner / (minSize * VALUE_CHAR_WIDTH)));
-  const valueSize = Math.min(size.value, Math.floor(inner / (value.length * VALUE_CHAR_WIDTH)));
+  const value = fit(tile.value, inner, minSize);
+  const valueSize = Math.min(
+    size.value,
+    Math.floor((size.value * inner) / textWidth(value, size.value)),
+  );
   return h(
     {
       flexDirection: 'column',
@@ -244,7 +260,12 @@ function hourChart(stats: WrappedStats, width: number, height: number, colors: s
       ),
     ),
     h(
-      { justifyContent: 'space-between', fontSize: 13, color: FAINT, fontFamily: 'JetBrains Mono' },
+      {
+        justifyContent: 'space-between',
+        fontSize: Math.max(13, Math.round(width / 36)),
+        color: FAINT,
+        fontFamily: 'JetBrains Mono',
+      },
       ...['12a', '6a', '12p', '6p', '11p'].map((t) => h({}, t)),
     ),
   );
