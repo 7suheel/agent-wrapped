@@ -28,6 +28,7 @@ Try it on your own logs, or on a fake year:
 npm run build && node dist/cli.js            # your real logs
 npm run demo                                 # fake year -> docs/example*.png
 node dist/cli.js --dir .demo-data --json     # stats as JSON
+npm run demo:gif                             # re-record docs/demo.gif (needs vhs, ttyd, ffmpeg)
 ```
 
 ## Where things live

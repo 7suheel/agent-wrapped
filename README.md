@@ -19,12 +19,10 @@
 
 ---
 
-<!--
-  DEMO GIF: record `npx agent-wrapped` with https://github.com/charmbracelet/vhs or asciinema + agg,
-  save it as docs/demo.gif and replace this comment with:
-  <p align="center"><img src="docs/demo.gif" alt="agent-wrapped terminal demo" width="720"></p>
--->
-<p align="center"><b>🎬 Demo GIF coming soon.</b> Until then, picture this: your stats counting up one by one, a heatmap of your late nights, and a drumroll before your personality is revealed.</p>
+<p align="center">
+  <img src="docs/demo.gif" alt="Terminal demo: npx agent-wrapped counts up sessions, hours and tokens, draws charts of models, projects, hours and tools, then reveals the personality The Night Owl and saves two cards" width="800">
+</p>
+<p align="center"><sub>Recorded with <a href="https://github.com/charmbracelet/vhs">VHS</a> on a generated fake year (<a href="docs/demo.tape"><code>docs/demo.tape</code></a>, <code>npm run demo:gif</code>).</sub></p>
 
 ## ⚡ Quick start
 
@@ -194,7 +192,7 @@ Logs are found automatically on **macOS, Linux and Windows**: `$CLAUDE_CONFIG_DI
 - [ ] More card themes (light, terminal-green, minimal)
 - [ ] Month-by-month view and "your year in one chart"
 - [ ] Compare two years (`--compare 2025`)
-- [ ] Recorded demo GIF in this README
+- [x] Recorded demo GIF in this README
 
 ## 🤝 Contributing
 
