@@ -1,0 +1,6 @@
+dist
+coverage
+.demo-data
+docs/*.png
+test/fixtures
+package-lock.json
