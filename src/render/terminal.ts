@@ -218,7 +218,8 @@ export async function reveal(stats: WrappedStats, options: RevealOptions): Promi
   }
 
   // Personality reveal
-  await heading('Your agent personality', stats.personality.colors);
+  const glow = [stats.personality.colors[1], stats.personality.colors[2], '#ffffff'];
+  await heading('Your agent personality', glow);
   if (animate) {
     for (const dots of ['.', '..', '...']) {
       write(`\r${pad}${paint.dim(`Analyzing your vibe${dots}`)}\x1b[K`);
@@ -230,12 +231,12 @@ export async function reveal(stats: WrappedStats, options: RevealOptions): Promi
   const title = `★ ${p.title.toUpperCase()} ★`;
   const width = Math.max(visibleLength(title), p.tagline.length, p.reason.length) + 4;
   const frame = (text: string, raw: string): string =>
-    `${paint.gradient('│', p.colors)} ${text}${' '.repeat(Math.max(0, width - visibleLength(raw) - 1))}${paint.gradient('│', p.colors)}`;
-  line(paint.gradient(`╭${'─'.repeat(width)}╮`, p.colors));
+    `${paint.gradient('│', glow)} ${text}${' '.repeat(Math.max(0, width - visibleLength(raw) - 1))}${paint.gradient('│', glow)}`;
+  line(paint.gradient(`╭${'─'.repeat(width)}╮`, glow));
   line(frame(paint.bold(paint.gradient(title, [...p.colors.slice(1), '#ffffff'])), title));
   line(frame(p.tagline, p.tagline));
   line(frame(paint.dim(p.reason), p.reason));
-  line(paint.gradient(`╰${'─'.repeat(width)}╯`, p.colors));
+  line(paint.gradient(`╰${'─'.repeat(width)}╯`, glow));
   if (p.traits.length) line(paint.dim(`also: ${p.traits.join(' · ')}`));
   line();
 }
