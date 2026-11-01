@@ -107,7 +107,8 @@ async function main(argv: string[]): Promise<number> {
       const shown = relative(process.cwd(), path) || path;
       log(`  ${shown.startsWith('..') ? path : shown}`);
     }
-    log(paint.dim('1200x675 for X / LinkedIn, 1080x1920 for stories. Share it with #AgentWrapped'));
+    log(paint.dim('1200x675 for X / LinkedIn · 1080x1920 for stories'));
+    log(`Share it with ${paint.bold(paint.gradient('#AgentWrapped', BRAND))}`);
     log('');
   }
   return 0;

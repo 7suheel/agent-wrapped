@@ -94,11 +94,7 @@ export async function reveal(stats: WrappedStats, options: RevealOptions): Promi
   const [top, bottom] = banner('agent wrapped');
   line(paint.gradient(top, BRAND));
   line(paint.gradient(bottom, BRAND, 0.08));
-  line(
-    paint.dim(
-      `Your ${stats.period.label} with Claude Code  ·  100% local, nothing left your machine`,
-    ),
-  );
+  line(paint.dim(`Your ${stats.period.label} with Claude Code  ·  100% local, nothing uploaded`));
 
   if (stats.empty) {
     line();
