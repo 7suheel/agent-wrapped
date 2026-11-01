@@ -43,7 +43,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build",
-    "demo": "npm run build && node scripts/generate-demo-data.ts && node dist/cli.js --dir .demo-data --year 2026 --out docs --name example --no-animation",
+    "demo": "npm run build && node scripts/generate-demo-data.ts && TZ=UTC node dist/cli.js --dir .demo-data --year 2026 --out docs --name example",
     "prepublishOnly": "npm run check"
   },
   "dependencies": {
