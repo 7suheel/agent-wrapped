@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Test (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+        if: matrix.os == 'ubuntu-latest'
+      - run: npm run format:check
+        if: matrix.os == 'ubuntu-latest'
+      - run: npm test
+      - run: npm run build
+      - name: Smoke test on the fake fixtures
+        run: |
+          node dist/cli.js --dir test/fixtures/claude --year 2026 --no-animation --out smoke
+          node dist/cli.js --dir test/fixtures/claude --year 2026 --json
+          node -e "for (const f of ['smoke/agent-wrapped-2026.png','smoke/agent-wrapped-2026-story.png']) if (!require('fs').statSync(f).size) process.exit(1)"
+
+  runtime:
+    # Tests need Node 22+ (Vitest), but the CLI itself supports Node 18+.
+    name: Run on Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+      - run: node --version
+      - run: node dist/cli.js --dir test/fixtures/claude --year 2026 --no-animation --out smoke
+      - run: node dist/cli.js --dir test/fixtures/claude --year 2026 --json > stats.json
+      - run: node -e "const s=require('./stats.json'); if (s.sessions !== 2) process.exit(1)"

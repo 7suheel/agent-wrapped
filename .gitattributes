@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.png binary
+*.woff binary
+# This fixture deliberately uses Windows line endings.
+test/fixtures/claude/projects/C--Users-alex-code-win-tool/*.jsonl -text
