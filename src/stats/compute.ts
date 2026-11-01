@@ -143,6 +143,8 @@ export function computeStats(
       continue;
     }
 
+    // "<synthetic>" marks messages Claude Code wrote itself (errors, notices): no API call.
+    if (event.model.startsWith('<')) continue;
     responses++;
     if (event.isSidechain) subagentResponses++;
     addPhrases(agentPhrases, event.phrases);
@@ -183,7 +185,7 @@ export function computeStats(
     projects.set(session.project, project);
   }
   for (const event of events) {
-    if (event.kind === 'assistant') {
+    if (event.kind === 'assistant' && !event.model.startsWith('<')) {
       const project = projects.get(event.project);
       if (project) project.responses++;
     }
@@ -240,8 +242,6 @@ function accountModel(
   unpriced: Set<string>,
   addCost: (cost: number) => void,
 ): void {
-  // "<synthetic>" marks messages Claude Code wrote itself (errors, notices): no API call.
-  if (event.model.startsWith('<')) return;
   const info = modelInfo(event.model);
   const id = info.key ?? event.model;
   const stat = models.get(id) ?? { id, name: info.name, responses: 0, tokens: 0, cost: 0 };

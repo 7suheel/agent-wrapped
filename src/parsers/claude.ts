@@ -96,6 +96,8 @@ class ParserState {
   private readonly seenLines = new Set<string>();
   private readonly assistants = new Map<string, AssistantEvent>();
   private readonly users: UserEvent[] = [];
+  /** Project per session, for lines that carry no `cwd`. */
+  private readonly sessionProjects = new Map<string, string>();
   private readonly report: ParseReport;
 
   constructor(report: ParseReport) {
@@ -138,7 +140,13 @@ class ParserState {
     }
     const sessionId = str(entry.sessionId) ?? 'unknown-session';
     const cwd = str(entry.cwd);
-    const project = cwd ? projectNameFromCwd(cwd) : fallbackProject;
+    let project: string;
+    if (cwd) {
+      project = projectNameFromCwd(cwd);
+      this.sessionProjects.set(sessionId, project);
+    } else {
+      project = this.sessionProjects.get(sessionId) ?? fallbackProject;
+    }
     const isSidechain = entry.isSidechain === true || inSubagentFolder;
 
     if (type === 'assistant') {
@@ -240,6 +248,11 @@ class ParserState {
 
   finish(): AgentEvent[] {
     const events: AgentEvent[] = [...this.assistants.values(), ...this.users];
+    // A session's first lines may come before any line with a `cwd`.
+    for (const event of events) {
+      const known = this.sessionProjects.get(event.sessionId);
+      if (known) event.project = known;
+    }
     return events.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   }
 }
